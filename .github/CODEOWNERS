@@ -1,0 +1,7 @@
+# Revisores solicitados automaticamente nos PRs (ver wiki > Como trabalhamos).
+# Responsavel pela frente users-api:
+*                 @Lucas-Giraldi
+# Plataforma (Docker, Kubernetes e CI) revisa junto:
+/Dockerfile       @Lucas-Giraldi @sampaiobrenner
+/k8s/             @Lucas-Giraldi @sampaiobrenner
+/.github/         @sampaiobrenner
