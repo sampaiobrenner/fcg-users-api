@@ -15,4 +15,37 @@
   <data name="CampoObrigatorio" xml:space="preserve">
     <value>O campo {0} é obrigatório.</value>
   </data>
+  <data name="EmailObrigatorio" xml:space="preserve">
+    <value>O e-mail é obrigatório.</value>
+  </data>
+  <data name="EmailFormatoInvalido" xml:space="preserve">
+    <value>O e-mail '{0}' possui formato inválido.</value>
+  </data>
+  <data name="SenhaObrigatoria" xml:space="preserve">
+    <value>A senha é obrigatória.</value>
+  </data>
+  <data name="SenhaTamanhoMinimo" xml:space="preserve">
+    <value>A senha deve ter no mínimo {0} caracteres.</value>
+  </data>
+  <data name="SenhaSemLetra" xml:space="preserve">
+    <value>A senha deve conter ao menos uma letra.</value>
+  </data>
+  <data name="SenhaSemNumero" xml:space="preserve">
+    <value>A senha deve conter ao menos um número.</value>
+  </data>
+  <data name="SenhaSemCaractereEspecial" xml:space="preserve">
+    <value>A senha deve conter ao menos um caractere especial.</value>
+  </data>
+  <data name="NomeObrigatorio" xml:space="preserve">
+    <value>O nome é obrigatório.</value>
+  </data>
+  <data name="NomeTamanhoMaximo" xml:space="preserve">
+    <value>O nome deve ter no máximo {0} caracteres.</value>
+  </data>
+  <data name="HashDaSenhaObrigatorio" xml:space="preserve">
+    <value>O hash da senha é obrigatório.</value>
+  </data>
+  <data name="PapelInvalido" xml:space="preserve">
+    <value>Papel de usuário inválido.</value>
+  </data>
 </root>

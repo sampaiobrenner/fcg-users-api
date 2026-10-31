@@ -18,11 +18,16 @@
     </PackageReference>
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
     <Using Include="FluentAssertions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="_Fixtures\samples\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

@@ -36,4 +36,7 @@
   <data name="ChaveJwtInvalida" xml:space="preserve">
     <value>A chave JWT (Jwt__Key) deve possuir ao menos {0} caracteres.</value>
   </data>
+  <data name="ExpiracaoJwtInvalida" xml:space="preserve">
+    <value>A expiração do token (Jwt__ExpirationMinutes) deve ser maior que zero.</value>
+  </data>
 </root>

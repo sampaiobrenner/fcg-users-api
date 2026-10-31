@@ -30,6 +30,7 @@ public class GlobalExceptionHandlerTests
         { new ForbiddenException("acesso"), StatusCodes.Status403Forbidden },
         { new NotFoundException("Jogo", Guid.Empty), StatusCodes.Status404NotFound },
         { new ConflictException("duplicado"), StatusCodes.Status409Conflict },
+        { new Microsoft.EntityFrameworkCore.DbUpdateException("corrida", new Npgsql.PostgresException("duplicado", "ERROR", "ERROR", Npgsql.PostgresErrorCodes.UniqueViolation)), StatusCodes.Status409Conflict },
         { new BusinessException("regra"), StatusCodes.Status422UnprocessableEntity },
         { new InvalidOperationException("falha"), StatusCodes.Status500InternalServerError }
     };
