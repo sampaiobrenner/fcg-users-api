@@ -1,5 +1,6 @@
 using System.Text;
 using Fcg.Contracts.Security;
+using Fcg.Users.Infrastructure._Shared.Security;
 using Fcg.Users.WebApi.Properties;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +17,8 @@ public static class AuthenticationServiceCollectionExtensions
         if (options.Key.Length < JwtOptions.MinimumKeyLength)
             throw new InvalidOperationException(string.Format(WebApiResources.ChaveJwtInvalida, JwtOptions.MinimumKeyLength));
 
-        services.Configure<JwtOptions>(section);
+        if (options.ExpirationMinutes <= 0)
+            throw new InvalidOperationException(WebApiResources.ExpiracaoJwtInvalida);
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

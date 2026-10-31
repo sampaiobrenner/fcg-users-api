@@ -3,7 +3,8 @@ using Fcg.Users.IntegrationTests._Fixtures;
 
 namespace Fcg.Users.IntegrationTests.WebApi._Shared.HealthChecks;
 
-public class HealthEndpointsTests : IClassFixture<UsersWebApplicationFactory>
+[Collection(UsersApiCollection.Name)]
+public class HealthEndpointsTests
 {
     private readonly HttpClient _client;
 

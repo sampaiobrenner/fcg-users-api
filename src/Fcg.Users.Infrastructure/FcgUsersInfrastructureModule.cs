@@ -1,12 +1,17 @@
 using Fcg.Users.Application._Shared.Contexts;
 using Fcg.Users.Application._Shared.Messaging;
+using Fcg.Users.Application._Shared.Security;
 using Fcg.Users.Domain._Shared.Modules;
+using Fcg.Users.Domain.Users;
 using Fcg.Users.Infrastructure._Shared.Context;
 using Fcg.Users.Infrastructure._Shared.Messaging;
+using Fcg.Users.Infrastructure._Shared.Security;
 using Fcg.Users.Infrastructure.Properties;
+using Fcg.Users.Infrastructure.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
 
 namespace Fcg.Users.Infrastructure;
@@ -31,5 +36,12 @@ public sealed class FcgUsersInfrastructureModule : IModule
 
         services.AddScoped<IUsersDbContext>(provider => provider.GetRequiredService<UsersDbContext>());
         services.AddScoped<IIntegrationEventPublisher, MassTransitIntegrationEventPublisher>();
+
+        services.AddScoped<IUserRepository, UserRepository>();
+
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.TryAddSingleton(TimeProvider.System);
+        services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
     }
 }

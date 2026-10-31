@@ -15,4 +15,34 @@
   <data name="RecursoNaoEncontrado" xml:space="preserve">
     <value>{0} '{1}' não encontrado(a).</value>
   </data>
+  <data name="Usuario" xml:space="preserve">
+    <value>Usuário</value>
+  </data>
+  <data name="EmailJaCadastrado" xml:space="preserve">
+    <value>O e-mail '{0}' já está cadastrado.</value>
+  </data>
+  <data name="EmailFormatoInvalido" xml:space="preserve">
+    <value>O e-mail possui formato inválido.</value>
+  </data>
+  <data name="CredenciaisInvalidas" xml:space="preserve">
+    <value>Credenciais inválidas.</value>
+  </data>
+  <data name="UsuarioInativo" xml:space="preserve">
+    <value>Usuário inativo.</value>
+  </data>
+  <data name="UsuarioNaoAutenticado" xml:space="preserve">
+    <value>Usuário não autenticado.</value>
+  </data>
+  <data name="SenhaTamanhoMinimo" xml:space="preserve">
+    <value>A senha deve ter no mínimo {0} caracteres.</value>
+  </data>
+  <data name="SenhaSemLetra" xml:space="preserve">
+    <value>A senha deve conter ao menos uma letra.</value>
+  </data>
+  <data name="SenhaSemNumero" xml:space="preserve">
+    <value>A senha deve conter ao menos um número.</value>
+  </data>
+  <data name="SenhaSemCaractereEspecial" xml:space="preserve">
+    <value>A senha deve conter ao menos um caractere especial.</value>
+  </data>
 </root>

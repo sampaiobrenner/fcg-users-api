@@ -1,5 +1,8 @@
+using Fcg.Users.Application.Users.SeedAdministrator;
 using Fcg.Users.Infrastructure._Shared.Context;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Fcg.Users.WebApi._Shared.Database;
 
@@ -7,13 +10,37 @@ public static class MigrationExtensions
 {
     private const string ApplyMigrationsOnStartupKey = "Database:ApplyMigrationsOnStartup";
 
+    /// <summary>
+    /// Aplica as migrations pendentes e, em seguida, garante o administrador padrao (seed idempotente).
+    /// Ambos so rodam quando <c>Database:ApplyMigrationsOnStartup</c> esta ligado.
+    /// </summary>
     public static async Task ApplyMigrationsAsync(this WebApplication app, CancellationToken cancellationToken)
     {
         if (!app.Configuration.GetValue<bool>(ApplyMigrationsOnStartupKey))
             return;
 
+        await using (var scope = app.Services.CreateAsyncScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+            await context.Database.MigrateAsync(cancellationToken);
+        }
+
+        await SeedAdministratorAsync(app, cancellationToken);
+    }
+
+    private static async Task SeedAdministratorAsync(WebApplication app, CancellationToken cancellationToken)
+    {
         await using var scope = app.Services.CreateAsyncScope();
-        var context = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
-        await context.Database.MigrateAsync(cancellationToken);
+        var sender = scope.ServiceProvider.GetRequiredService<ISender>();
+
+        try
+        {
+            await sender.Send(new SeedAdministratorCommand(), cancellationToken);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        {
+            // Outra replica criou o administrador ao mesmo tempo: o objetivo do seed ja foi atingido.
+            app.Logger.LogInformation("Administrador padrao ja criado por outra instancia");
+        }
     }
 }
