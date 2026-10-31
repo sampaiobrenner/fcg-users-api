@@ -1,3 +1,4 @@
+using Fcg.Users.Infrastructure._Shared.Context;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -8,7 +9,8 @@ namespace Fcg.Users.IntegrationTests._Fixtures;
 
 /// <summary>
 /// Sobe a API contra um PostgreSQL real (Testcontainers), aplicando as migrations e o seed no startup,
-/// com o RabbitMQ substituido pelo test harness em memoria do MassTransit.
+/// com o RabbitMQ substituido pelo test harness em memoria do MassTransit. O harness recebe o mesmo
+/// EF Outbox da aplicacao, entao os eventos passam por <c>outbox_message</c> antes de chegar ao bus.
 /// </summary>
 public sealed class UsersWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
@@ -37,6 +39,15 @@ public sealed class UsersWebApplicationFactory : WebApplicationFactory<Program>,
         builder.UseSetting("Jwt:Audience", JwtAudience);
         builder.UseSetting("Jwt:Key", JwtKey);
 
-        builder.ConfigureTestServices(services => services.AddMassTransitTestHarness());
+        builder.ConfigureTestServices(services => services.AddMassTransitTestHarness(bus =>
+        {
+            bus.AddConsumer<UserCreatedEventProbeConsumer>();
+            bus.AddEntityFrameworkOutbox<UsersDbContext>(outbox =>
+            {
+                outbox.UsePostgres();
+                outbox.UseBusOutbox();
+                outbox.QueryDelay = TimeSpan.FromMilliseconds(100);
+            });
+        }));
     }
 }

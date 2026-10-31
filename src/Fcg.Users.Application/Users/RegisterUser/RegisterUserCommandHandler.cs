@@ -1,5 +1,7 @@
 using Fcg.Users.Application._Shared.Contexts;
+using Fcg.Contracts.Events.V1;
 using Fcg.Users.Application._Shared.Exceptions;
+using Fcg.Users.Application._Shared.Messaging;
 using Fcg.Users.Application._Shared.Parsers;
 using Fcg.Users.Application._Shared.Security;
 using Fcg.Users.Application.Properties;
@@ -14,17 +16,23 @@ public sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCom
     private readonly IUserRepository _users;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IUsersDbContext _context;
+    private readonly IIntegrationEventPublisher _publisher;
+    private readonly IParser<User, UserCreatedEvent> _eventParser;
     private readonly IParser<UserPersistenceModel, UserResponse> _parser;
 
     public RegisterUserCommandHandler(
         IUserRepository users,
         IPasswordHasher passwordHasher,
         IUsersDbContext context,
+        IIntegrationEventPublisher publisher,
+        IParser<User, UserCreatedEvent> eventParser,
         IParser<UserPersistenceModel, UserResponse> parser)
     {
         _users = users;
         _passwordHasher = passwordHasher;
         _context = context;
+        _publisher = publisher;
+        _eventParser = eventParser;
         _parser = parser;
     }
 
@@ -40,6 +48,9 @@ public sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCom
         var user = User.Create(request.Name, email, _passwordHasher.Hash(password.Value));
 
         await _users.AddAsync(user, cancellationToken);
+
+        // Publicado antes do SaveChanges: o outbox grava o evento na mesma transacao do usuario.
+        await _publisher.PublishAsync(_eventParser.Parse(user)!, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return _parser.Parse(user.PersistenceModel)!;

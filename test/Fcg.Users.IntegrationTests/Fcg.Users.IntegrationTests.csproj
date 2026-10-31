@@ -27,6 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="_Fixtures\samples\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Fcg.Users.WebApi\Fcg.Users.WebApi.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,7 @@
+using Fcg.Contracts.Events.V1;
 using Fcg.Users.Application._Shared.Contexts;
+using Fcg.Users.Application._Shared.Messaging;
+using Fcg.Users.Application._Shared.Parsers;
 using Fcg.Users.Application._Shared.Security;
 using Fcg.Users.Domain.Users;
 using MediatR;
@@ -11,12 +14,21 @@ public sealed class SeedAdministratorCommandHandler : IRequestHandler<SeedAdmini
     private readonly IUserRepository _users;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IUsersDbContext _context;
+    private readonly IIntegrationEventPublisher _publisher;
+    private readonly IParser<User, UserCreatedEvent> _eventParser;
 
-    public SeedAdministratorCommandHandler(IUserRepository users, IPasswordHasher passwordHasher, IUsersDbContext context)
+    public SeedAdministratorCommandHandler(
+        IUserRepository users,
+        IPasswordHasher passwordHasher,
+        IUsersDbContext context,
+        IIntegrationEventPublisher publisher,
+        IParser<User, UserCreatedEvent> eventParser)
     {
         _users = users;
         _passwordHasher = passwordHasher;
         _context = context;
+        _publisher = publisher;
+        _eventParser = eventParser;
     }
 
     public async Task<bool> Handle(SeedAdministratorCommand request, CancellationToken cancellationToken)
@@ -33,6 +45,9 @@ public sealed class SeedAdministratorCommandHandler : IRequestHandler<SeedAdmini
             UserRole.Administrator);
 
         await _users.AddAsync(administrator, cancellationToken);
+
+        // A NotificationsAPI tambem precisa conhecer o administrador; so publica na criacao.
+        await _publisher.PublishAsync(_eventParser.Parse(administrator)!, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return true;
