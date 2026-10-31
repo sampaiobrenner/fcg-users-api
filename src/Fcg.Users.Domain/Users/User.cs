@@ -27,7 +27,7 @@ public sealed class User : DomainModelBase<UserPersistenceModel>, IAggregateRoot
         {
             Email = email.Value,
             Active = true,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = UtcNowInMicroseconds()
         });
 
         user.Rename(name);
@@ -64,6 +64,14 @@ public sealed class User : DomainModelBase<UserPersistenceModel>, IAggregateRoot
             throw new BusinessException(DomainResources.HashDaSenhaObrigatorio);
 
         PersistenceModel.PasswordHash = passwordHash;
+    }
+
+    // O PostgreSQL guarda timestamptz com precisao de microssegundos; truncar evita que a resposta do cadastro
+    // difira do valor lido depois do banco (DateTime.UtcNow tem resolucao de 100 ns no Linux).
+    private static DateTime UtcNowInMicroseconds()
+    {
+        var now = DateTime.UtcNow;
+        return new DateTime(now.Ticks - (now.Ticks % TimeSpan.TicksPerMicrosecond), DateTimeKind.Utc);
     }
 
     public void Activate() => PersistenceModel.Active = true;

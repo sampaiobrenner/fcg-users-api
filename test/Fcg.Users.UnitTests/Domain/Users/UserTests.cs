@@ -22,6 +22,7 @@ public class UserTests
         user.PersistenceModel.Active.Should().BeTrue();
         user.PersistenceModel.CreatedAt.Should().BeOnOrAfter(before);
         user.PersistenceModel.CreatedAt.Kind.Should().Be(DateTimeKind.Utc);
+        (user.PersistenceModel.CreatedAt.Ticks % TimeSpan.TicksPerMicrosecond).Should().Be(0);
     }
 
     [Theory]
