@@ -15,6 +15,9 @@ namespace Fcg.Users.IntegrationTests._Fixtures;
 public sealed class UsersWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     public const string JwtKey = "fcg-integration-tests-signing-key-0123456789";
+    public const string AdminName = "Administrador FCG";
+    public const string AdminEmail = "admin@cloudgames.com";
+    public const string AdminPassword = "Adm!nTest123";
     public const string JwtIssuer = "fcg-users-api";
     public const string JwtAudience = "fcg";
 
@@ -38,6 +41,9 @@ public sealed class UsersWebApplicationFactory : WebApplicationFactory<Program>,
         builder.UseSetting("Jwt:Issuer", JwtIssuer);
         builder.UseSetting("Jwt:Audience", JwtAudience);
         builder.UseSetting("Jwt:Key", JwtKey);
+        builder.UseSetting("Seed:Administrator:Name", AdminName);
+        builder.UseSetting("Seed:Administrator:Email", AdminEmail);
+        builder.UseSetting("Seed:Administrator:Password", AdminPassword);
 
         builder.ConfigureTestServices(services => services.AddMassTransitTestHarness(bus =>
         {

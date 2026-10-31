@@ -25,7 +25,7 @@ public class SeedAdministratorCommandHandlerTests
     {
         _hasher.Setup(hasher => hasher.Hash("Admin@123")).Returns("admin-hash");
 
-        var created = await CreateSut().Handle(new SeedAdministratorCommand(), CancellationToken.None);
+        var created = await CreateSut().Handle(new SeedAdministratorCommand("Administrador FCG", "admin@cloudgames.com", "Admin@123"), CancellationToken.None);
 
         created.Should().BeTrue();
         _users.Verify(repository => repository.AddAsync(
@@ -48,7 +48,7 @@ public class SeedAdministratorCommandHandlerTests
         _users.Setup(repository => repository.GetByEmailAsync(Email.Create("admin@cloudgames.com"), It.IsAny<CancellationToken>()))
             .ReturnsAsync(UserFactory.Create("Administrador FCG", "admin@cloudgames.com", UserRole.Administrator));
 
-        var created = await CreateSut().Handle(new SeedAdministratorCommand(), CancellationToken.None);
+        var created = await CreateSut().Handle(new SeedAdministratorCommand("Administrador FCG", "admin@cloudgames.com", "Admin@123"), CancellationToken.None);
 
         created.Should().BeFalse();
         _users.Verify(repository => repository.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Never);

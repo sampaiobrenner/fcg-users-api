@@ -30,12 +30,20 @@ public static class MigrationExtensions
 
     private static async Task SeedAdministratorAsync(WebApplication app, CancellationToken cancellationToken)
     {
+        var options = app.Configuration.GetSection(AdministratorSeedOptions.SectionName).Get<AdministratorSeedOptions>() ?? new AdministratorSeedOptions();
+
+        if (!options.IsConfigured)
+        {
+            app.Logger.LogWarning("Seed do administrador ignorado: configure Seed__Administrator__Email e Seed__Administrator__Password");
+            return;
+        }
+
         await using var scope = app.Services.CreateAsyncScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
 
         try
         {
-            await sender.Send(new SeedAdministratorCommand(), cancellationToken);
+            await sender.Send(new SeedAdministratorCommand(options.Name, options.Email, options.Password), cancellationToken);
         }
         catch (DbUpdateException exception) when (exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
         {

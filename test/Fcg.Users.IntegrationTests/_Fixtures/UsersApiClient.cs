@@ -45,7 +45,7 @@ internal static class UsersApiClient
     public static async Task<HttpClient> CreateAdministratorClientAsync(this UsersWebApplicationFactory factory)
     {
         var client = factory.CreateClient();
-        var login = await client.LoginAsync(SeedAdministratorCommand.DefaultEmail, SeedAdministratorCommand.DefaultPassword);
+        var login = await client.LoginAsync(UsersWebApplicationFactory.AdminEmail, UsersWebApplicationFactory.AdminPassword);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", login.AccessToken);
         return client;
     }

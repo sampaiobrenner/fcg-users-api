@@ -98,29 +98,29 @@ public class UserCreatedEventPublicationTests
         _factory.CreateClient();
         var harness = _factory.Services.GetTestHarness();
 
-        var received = await harness.WaitForUserCreatedAsync(SeedAdministratorCommand.DefaultEmail);
+        var received = await harness.WaitForUserCreatedAsync(UsersWebApplicationFactory.AdminEmail);
 
         received.Should().NotBeNull();
-        received!.Context.Message.Name.Should().Be(SeedAdministratorCommand.DefaultName);
-        harness.CountUserCreated(SeedAdministratorCommand.DefaultEmail).Should().Be(1);
+        received!.Context.Message.Name.Should().Be(UsersWebApplicationFactory.AdminName);
+        harness.CountUserCreated(UsersWebApplicationFactory.AdminEmail).Should().Be(1);
     }
 
     [Fact]
     public async Task Seed_NaoDevePublicarNovoEventoNemDuplicarAdministrador_QuandoAplicacaoReiniciada()
     {
         _factory.CreateClient();
-        (await _factory.Services.GetTestHarness().WaitForUserCreatedAsync(SeedAdministratorCommand.DefaultEmail)).Should().NotBeNull();
+        (await _factory.Services.GetTestHarness().WaitForUserCreatedAsync(UsersWebApplicationFactory.AdminEmail)).Should().NotBeNull();
 
         await using var restarted = _factory.WithWebHostBuilder(_ => { });
         restarted.CreateClient();
 
-        (await restarted.Services.GetTestHarness().WaitForUserCreatedAsync(SeedAdministratorCommand.DefaultEmail, TimeSpan.FromSeconds(2)))
+        (await restarted.Services.GetTestHarness().WaitForUserCreatedAsync(UsersWebApplicationFactory.AdminEmail, TimeSpan.FromSeconds(2)))
             .Should().BeNull();
 
         await using var scope = restarted.Services.CreateAsyncScope();
         var administrators = await scope.ServiceProvider.GetRequiredService<UsersDbContext>()
             .Set<UserPersistenceModel>()
-            .CountAsync(user => user.Email == SeedAdministratorCommand.DefaultEmail);
+            .CountAsync(user => user.Email == UsersWebApplicationFactory.AdminEmail);
         administrators.Should().Be(1);
     }
 

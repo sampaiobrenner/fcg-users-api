@@ -33,15 +33,15 @@ public sealed class SeedAdministratorCommandHandler : IRequestHandler<SeedAdmini
 
     public async Task<bool> Handle(SeedAdministratorCommand request, CancellationToken cancellationToken)
     {
-        var email = Email.Create(SeedAdministratorCommand.DefaultEmail);
+        var email = Email.Create(request.Email);
 
         if (await _users.GetByEmailAsync(email, cancellationToken) is not null)
             return false;
 
         var administrator = User.Create(
-            SeedAdministratorCommand.DefaultName,
+            request.Name,
             email,
-            _passwordHasher.Hash(SeedAdministratorCommand.DefaultPassword),
+            _passwordHasher.Hash(Password.Create(request.Password).Value),
             UserRole.Administrator);
 
         await _users.AddAsync(administrator, cancellationToken);

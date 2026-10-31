@@ -41,11 +41,13 @@ Regras de validacao: nome obrigatorio (max. 120); e-mail valido (max. 320, norma
 
 ### Administrador padrao
 
-Apos aplicar as migrations no startup (`Database__ApplyMigrationsOnStartup=true`), o servico garante um administrador (seed idempotente, mesmo do monolito):
+Apos aplicar as migrations no startup (`Database__ApplyMigrationsOnStartup=true`), o servico garante um administrador (seed idempotente). Nome e e-mail vem da secao `Seed:Administrator` e a **senha vem do Secret** (`Seed__Administrator__Password`), nunca do codigo. Sem e-mail ou senha configurados, o seed e ignorado com um aviso no log.
 
-| Nome | E-mail | Senha |
-|---|---|---|
-| `Administrador FCG` | `admin@cloudgames.com` | `Admin@123` |
+| Variavel | Valor padrao (dev) |
+|---|---|
+| `Seed__Administrator__Name` | `Administrador FCG` |
+| `Seed__Administrator__Email` | `admin@cloudgames.com` |
+| `Seed__Administrator__Password` | definido no `k8s/secret.yaml` e no docker-compose (`Admin@123` em desenvolvimento) |
 
 Se o administrador ja existir nada e feito; quando ele e criado, o `UserCreatedEvent` correspondente tambem e publicado.
 
@@ -199,5 +201,7 @@ As migrations rodam no startup (`Database__ApplyMigrationsOnStartup=true`); o EF
 | `Jwt__Audience` | ConfigMap | Audiencia do token | `fcg` |
 | `Jwt__Key` | Secret | Chave simetrica (min. 32 caracteres, igual em todos os servicos) | `***` |
 | `Jwt__ExpirationMinutes` | ConfigMap | Validade do token emitido no login, em minutos (default `60`) | `60` |
+| `Seed__Administrator__Email` | appsettings | E-mail do administrador criado no startup | `admin@cloudgames.com` |
+| `Seed__Administrator__Password` | Secret | Senha do administrador criado no startup (sem ela o seed e ignorado) | `***` |
 
 Nenhum dado sensivel fica no ConfigMap. A UsersAPI nao consome filas, portanto nao possui variaveis `Messaging__Queues__*`.

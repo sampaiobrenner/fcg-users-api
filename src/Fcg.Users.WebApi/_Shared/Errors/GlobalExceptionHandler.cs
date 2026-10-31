@@ -4,6 +4,8 @@ using Fcg.Users.WebApi.Properties;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Fcg.Users.WebApi._Shared.Errors;
 
@@ -27,6 +29,9 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
             ForbiddenException => (StatusCodes.Status403Forbidden, WebApiResources.AcessoNegado),
             NotFoundException => (StatusCodes.Status404NotFound, WebApiResources.RecursoNaoEncontrado),
             ConflictException => (StatusCodes.Status409Conflict, WebApiResources.ConflitoDeEstado),
+            // Corrida entre duas requisicoes: o indice unico do banco barra a segunda (ex.: e-mail cadastrado ao mesmo tempo).
+            DbUpdateException { InnerException: PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } }
+                => (StatusCodes.Status409Conflict, WebApiResources.ConflitoDeEstado),
             BusinessException => (StatusCodes.Status422UnprocessableEntity, WebApiResources.RegraDeNegocioViolada),
             _ => (StatusCodes.Status500InternalServerError, WebApiResources.ErroInesperado)
         };
@@ -38,7 +43,7 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
         {
             Status = status,
             Title = title,
-            Detail = status == StatusCodes.Status500InternalServerError ? null : exception.Message
+            Detail = status == StatusCodes.Status500InternalServerError || exception is DbUpdateException ? null : exception.Message
         };
 
         if (exception is ValidationException validationException)
